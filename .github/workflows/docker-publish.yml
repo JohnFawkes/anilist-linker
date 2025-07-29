@@ -19,9 +19,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: downcase REPO
-        run: |
-          echo "REPO=`echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]'`" >>${GITHUB_ENV}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -33,7 +30,7 @@ jobs:
           file: ./Docker/Dockerfile
           push: true
           tags: |
-            ${{ REPO }}:latest
-            ${{ REPO }}:${{ github.sha }}
+            ${{ var.repo }}:latest
+            ${{ var.repo }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
