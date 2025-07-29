@@ -1,22 +1,9 @@
 services:
-  plex-anilist-linker:
-    # Build the image from the Dockerfile located in the 'docker' subdirectory
-    # and set the build context to the project root (where docker-compose.yml is)
-    build:
-      context: . # The build context is the current directory (project root)
-      dockerfile: ./Docker/Dockerfile # Path to your Dockerfile relative to the context
-
-    container_name: plex-anilist-linker # A friendly name for your container
-
-    # Restart the container automatically unless it's explicitly stopped
+  anilist-linker:
+    image: ghcr.io/JohnFawkes/anilist-linker:latest
+    container_name: anilist-linker
     restart: unless-stopped
-
-    # Load environment variables from the .env file in the project root
     env_file:
       - ./.env
-
-    # Mount a volume for persistent logs
-    # Replace './logs' with the desired path on your host machine
-    # This path will be mapped to /app/logs inside the container (PLEX_LOG_PATH default)
     volumes:
-      - ./logs:/app/logs # Host path:Container path
+      - ./logs:/app/logs
