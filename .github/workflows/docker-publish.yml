@@ -30,7 +30,7 @@ jobs:
           file: ./Docker/Dockerfile
           push: true
           tags: |
-            ${{ vars.repo }}:latest
-            ${{ vars.repo }}:${{ github.sha }}
+            ghcr.io/${{ vars.repo }}:latest
+            ghcr.io/${{ vars.repo }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
