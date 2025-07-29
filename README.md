@@ -35,12 +35,10 @@ To get started with the Plex Anilist Linker, follow these steps:
 1.  **Clone the Repository:**
 
     ```bash
-    git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
+    git clone [https://github.com/JohnFawkes/anilist-linker.git](https://github.com/JohnFawkes/anilist-linker)
     cd your-repo-name
 
     ```
-
-    *(Replace `your-username/your-repo-name` with your actual repository details if you create one.)*
 
 2.  **Install Python (if running directly):**
     Ensure you have Python 3.8 or newer installed. You can download it from [python.org](https://www.python.org/downloads/). *(If you plan to use Docker, Python will be installed within the container.)*
@@ -64,8 +62,6 @@ To get started with the Plex Anilist Linker, follow these steps:
     pip install -r requirements.txt
 
     ```
-
-    *(The `requirements.txt` file should contain `plexapi`, `requests`, and `python-dotenv`.)*
 
 5.  **Download `anime_ids.json` (Automated):**
     The script will automatically download the `anime_ids.json` file from `https://raw.githubusercontent.com/Kometa-Team/Anime-IDs/refs/heads/master/anime_ids.json` when it runs. Ensure your system has internet access.
@@ -108,6 +104,24 @@ PLEX_TARGET_TV_SHOW_LIBRARIES=''
 # If left empty, Movie libraries will be SKIPPED entirely.
 PLEX_TARGET_MOVIE_LIBRARIES=''
 
+# --- Scheduling ---
+# Cron schedule for running the script.
+# Format: "minute hour day_of_month month day_of_week"
+# Examples:
+#   "0 3 * * *"  - Every day at 3:00 AM
+#   "0 0 * * 0"  - Every Sunday at 12:00 AM (midnight)
+#   "*/30 * * * *" - Every 30 minutes
+# Find more examples at crontab.guru
+CRON_SCHEDULE="0 3 * * *"
+
+# Set to 'True' to force the script to run once immediately when the container starts,
+# in addition to any scheduled cron runs. Set to 'False' to only run on schedule.
+FORCE_RUN_ON_START='False'
+
+###################################################
+# YOU SHOULDNT NEED TO CHANGE ANYTHING BELOW THIS #
+###################################################
+
 # --- Anilist Data Source ---
 # URL for the anime_ids.json file. Usually, this default is fine.
 ANIME_IDS_JSON_URL='[https://raw.githubusercontent.com/Kometa-Team/Anime-IDs/refs/heads/master/anime_ids.json](https://raw.githubusercontent.com/Kometa-Team/Anime-IDs/refs/heads/master/anime_ids.json)'
@@ -129,16 +143,6 @@ MAX_ANILIST_RETRIES='5'
 # Also used for proactive pausing when 'x-ratelimit-remaining' is low.
 DEFAULT_RETRY_AFTER_SECONDS='60'
 # The script also enforces 1 API call every 2.0 seconds directly (ANILIST_MIN_INTERVAL_SECONDS = 2.0 in script).
-
-# --- Scheduling ---
-# Cron schedule for running the script.
-# Format: "minute hour day_of_month month day_of_week"
-# Examples:
-#   "0 3 * * *"  - Every day at 3:00 AM
-#   "0 0 * * 0"  - Every Sunday at 12:00 AM (midnight)
-#   "*/30 * * * *" - Every 30 minutes
-# Find more examples at crontab.guru
-CRON_SCHEDULE="0 3 * * *"
-# Set to 'True' to force the script to run once immediately when the container starts,
-# in addition to any scheduled cron runs. Set to 'False' to only run on schedule.
-FORCE_RUN_ON_START='False'
+# Changing this could cause you to get api errors as anilist enforces a strict api via headers. This has been testing
+# to prevent those errors as much as possible
+ANILIST_MIN_INTERVAL_SECONDS="2.0
