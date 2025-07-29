@@ -1,6 +1,6 @@
 services:
   anilist-linker:
-    image: ghcr.io/JohnFawkes/anilist-linker:latest
+    image: ghcr.io/johnfawkes/anilist-linker:latest
     container_name: anilist-linker
     restart: unless-stopped
     env_file:
