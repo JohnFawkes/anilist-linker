@@ -1,6 +1,8 @@
-# Plex Anilist Linker
+# Anilist Linker for Plex
 
 This Python script automates the process of enriching your Plex Media Server library by finding corresponding Anilist entries for your anime TV shows and movies and then prepending the Anilist URL to their summaries. It achieves this by leveraging external ID mappings (TMDB, TVDB, IMDb) from the Kometa-Team's `anime_ids.json` data.
+
+* **THIS SCRIPT WAS GENERATED USING GOOGLE GEMINI! I KNOW THIS CAN BE A TURN OFF FOR SOME BUT HAS BEEN TESTED AND WORKS GREAT! JUST GIVING THIS WARNING NOW AS I KNOW SOME DONT LIKE AI MADE SCRIPTS
 
 ## Features
 
@@ -35,8 +37,8 @@ To get started with the Plex Anilist Linker, follow these steps:
 1.  **Clone the Repository:**
 
     ```bash
-    git clone [https://github.com/JohnFawkes/anilist-linker.git](https://github.com/JohnFawkes/anilist-linker)
-    cd your-repo-name
+    git clone https://github.com/JohnFawkes/anilist-linker
+    cd anilist-linker
 
     ```
 
