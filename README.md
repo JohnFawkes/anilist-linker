@@ -1,8 +1,6 @@
-# Anilist Linker for Plex
+# Plex Anilist Linker
 
 This Python script automates the process of enriching your Plex Media Server library by finding corresponding Anilist entries for your anime TV shows and movies and then prepending the Anilist URL to their summaries. It achieves this by leveraging external ID mappings (TMDB, TVDB, IMDb) from the Kometa-Team's `anime_ids.json` data.
-
-**THIS SCRIPT WAS GENERATED USING GOOGLE GEMINI! I KNOW THIS CAN BE A TURN OFF FOR SOME BUT HAS BEEN TESTED AND WORKS GREAT! JUST GIVING THIS WARNING NOW AS I KNOW SOME DONT LIKE AI MADE SCRIPTS**
 
 ## Features
 
@@ -37,10 +35,11 @@ To get started with the Plex Anilist Linker, follow these steps:
 1.  **Clone the Repository:**
 
     ```bash
-    git clone https://github.com/JohnFawkes/anilist-linker
-    cd anilist-linker
-
+    git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
+    cd your-repo-name
     ```
+
+    *(Replace `your-username/your-repo-name` with your actual repository details if you create one.)*
 
 2.  **Install Python (if running directly):**
     Ensure you have Python 3.8 or newer installed. You can download it from [python.org](https://www.python.org/downloads/). *(If you plan to use Docker, Python will be installed within the container.)*
@@ -54,7 +53,6 @@ To get started with the Plex Anilist Linker, follow these steps:
     # .\venv\Scripts\activate
     # On macOS/Linux:
     source venv/bin/activate
-
     ```
 
 4.  **Install Dependencies:**
@@ -62,8 +60,9 @@ To get started with the Plex Anilist Linker, follow these steps:
 
     ```bash
     pip install -r requirements.txt
-
     ```
+
+    *(The `requirements.txt` file should contain `plexapi`, `requests`, and `python-dotenv`.)*
 
 5.  **Download `anime_ids.json` (Automated):**
     The script will automatically download the `anime_ids.json` file from `https://raw.githubusercontent.com/Kometa-Team/Anime-IDs/refs/heads/master/anime_ids.json` when it runs. Ensure your system has internet access.
@@ -106,24 +105,6 @@ PLEX_TARGET_TV_SHOW_LIBRARIES=''
 # If left empty, Movie libraries will be SKIPPED entirely.
 PLEX_TARGET_MOVIE_LIBRARIES=''
 
-# --- Scheduling ---
-# Cron schedule for running the script.
-# Format: "minute hour day_of_month month day_of_week"
-# Examples:
-#   "0 3 * * *"  - Every day at 3:00 AM
-#   "0 0 * * 0"  - Every Sunday at 12:00 AM (midnight)
-#   "*/30 * * * *" - Every 30 minutes
-# Find more examples at crontab.guru
-CRON_SCHEDULE="0 3 * * *"
-
-# Set to 'True' to force the script to run once immediately when the container starts,
-# in addition to any scheduled cron runs. Set to 'False' to only run on schedule.
-FORCE_RUN_ON_START='False'
-
-###################################################
-# YOU SHOULDNT NEED TO CHANGE ANYTHING BELOW THIS #
-###################################################
-
 # --- Anilist Data Source ---
 # URL for the anime_ids.json file. Usually, this default is fine.
 ANIME_IDS_JSON_URL='[https://raw.githubusercontent.com/Kometa-Team/Anime-IDs/refs/heads/master/anime_ids.json](https://raw.githubusercontent.com/Kometa-Team/Anime-IDs/refs/heads/master/anime_ids.json)'
@@ -145,6 +126,110 @@ MAX_ANILIST_RETRIES='5'
 # Also used for proactive pausing when 'x-ratelimit-remaining' is low.
 DEFAULT_RETRY_AFTER_SECONDS='60'
 # The script also enforces 1 API call every 2.0 seconds directly (ANILIST_MIN_INTERVAL_SECONDS = 2.0 in script).
-# Changing this could cause you to get api errors as anilist enforces a strict api via headers. This has been testing
-# to prevent those errors as much as possible
-ANILIST_MIN_INTERVAL_SECONDS="2.0
+
+# --- Scheduling ---
+# Cron schedule for running the script.
+# Format: "minute hour day_of_month month day_of_week"
+# Examples:
+#   "0 3 * * *"  - Every day at 3:00 AM
+#   "0 0 * * 0"  - Every Sunday at 12:00 AM (midnight)
+#   "*/30 * * * *" - Every 30 minutes
+# Find more examples at crontab.guru
+CRON_SCHEDULE="0 3 * * *"
+# Set to 'True' to force the script to run once immediately when the container starts,
+# in addition to any scheduled cron runs. Set to 'False' to only run on schedule.
+FORCE_RUN_ON_START='False'
+````
+
+### 2\. Run the Script (Directly or via Docker)
+
+#### Option A: Run Directly (for testing/development)
+
+Once your `.env` file is configured and dependencies are installed, you can run the script from your terminal:
+
+##### Dry Run (Recommended for first-time use)
+
+Always start with a dry run to see what changes the script *would* make without actually modifying your Plex library.
+
+```bash
+python plex_anilist_linker.py
+```
+
+*(Ensure `PLEX_MAKE_CHANGES='False'` in your `.env` file for a dry run.)*
+
+##### Live Run
+
+If you're confident in the dry run output, you can set `PLEX_MAKE_CHANGES='True'` in your `.env` file and run the script. It will ask for confirmation by default.
+
+```bash
+python plex_anilist_linker.py
+```
+
+##### Headless / Bypass Confirmation
+
+For automated environments (e.g., cron jobs on a host machine), you can bypass the confirmation prompt by adding the `-y` or `--yes` flag:
+
+```bash
+python plex_anilist_linker.py -y
+# or
+python plex_anilist_linker.py --yes
+```
+
+*(This will only apply changes if `PLEX_MAKE_CHANGES='True'` in your `.env` file.)*
+
+#### Option B: Run with Docker (for production/scheduling)
+
+1.  **Build the Docker Image:**
+    Navigate to the root directory of your project (where `docker-compose.yml` is located) in your terminal and build the image:
+
+    ```bash
+    docker build -t plex-anilist-linker -f docker/Dockerfile .
+    ```
+
+2.  **Run the Docker Container with Docker Compose:**
+    This is the recommended way to run the container for scheduling and persistent logging. Ensure your `.env` file is in the project root.
+
+    ```bash
+    docker compose up -d --build
+    ```
+
+      * `docker compose up`: Starts the services defined in `docker-compose.yml`.
+
+      * `-d`: Runs the containers in detached mode (in the background).
+
+      * `--build`: Forces Docker Compose to rebuild the image before starting the container. Use this whenever you make changes to your `Dockerfile` or source code.
+
+      * Logs will be saved to the `./logs` directory in your project root by default (as configured in `docker-compose.yml` and `.env`).
+
+3.  **Check Container Logs:**
+    To see the output of your scheduled script runs (including errors and unmatched items), check the Docker logs:
+
+    ```bash
+    docker compose logs -f plex-anilist-linker
+    ```
+
+      * `-f`: Follows the log output in real-time.
+
+4.  **Stop and Remove the Container:**
+
+    ```bash
+    docker compose down
+    ```
+
+## Troubleshooting & Debugging
+
+  * **Check Console Output (for direct runs) / Docker Logs (for containerized runs):** The script provides real-time feedback on its progress.
+
+  * **Review Log Files:** If `PLEX_LOG_PATH` is configured and mounted (for Docker), detailed logs will be saved, which are invaluable for debugging.
+
+  * **Enable Debug Mode:** Set `PLEX_DEBUG='True'` in your `.env` file to get very verbose output in both the console/Docker logs and log file, showing internal workings like GUID parsing and JSON lookups.
+
+  * **Unmatched Items:** At the end of each run, the script will list any items for which it couldn't find an Anilist link, along with the reason (e.g., no external ID, no match in `anime_ids.json`, API error).
+
+  * **Plex Library Agents:** If the script consistently reports "No recognizable TMDB, TVDB, or IMDb ID formats found in GUIDs," it might indicate that your Plex library's metadata agent is not configured to pull these external IDs. Consider changing your library's agent settings (e.g., to "Plex Movie" or "Plex TV Series" which often expose these, or specific agents like "TheTVDB") and refreshing metadata for your items.
+
+  * **Cron Schedule:** Ensure your `CRON_SCHEDULE` in the `.env` file is in the correct cron format. You can use tools like [crontab.guru](https://crontab.guru/) to verify your schedule.
+
+-----
+
+Feel free to contribute or report issues on the GitHub repository\!
