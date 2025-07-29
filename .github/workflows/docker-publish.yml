@@ -21,7 +21,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: downcase REPO
         run: |
-          echo "REPO=${github.repository@L}" >>${github_env}
+          echo "REPO=`echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]'`" >>${GITHUB_ENV}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
