@@ -1,4 +1,4 @@
-# Plex Anilist Linker
+# Anilist Linker for Plex
 
 This Python script automates the process of enriching your Plex Media Server library by finding corresponding Anilist entries for your anime TV shows and movies and then prepending the Anilist URL to their summaries. It achieves this by leveraging external ID mappings (TMDB, TVDB, IMDb) from the Kometa-Team's `anime_ids.json` data.
 
@@ -30,18 +30,16 @@ This Python script automates the process of enriching your Plex Media Server lib
 
 * **Dockerized & Scheduled:** Can be run as a Docker container with a user-defined cron schedule, including an option to force an immediate run on container start.
 
-## Installation
+## Installation (Local and Docker)
 
 To get started with the Plex Anilist Linker, follow these steps:
 
 1.  **Clone the Repository:**
 
     ```bash
-    git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
-    cd your-repo-name
+    git clone https://github.com/JohnFawkes/anilist-linker
+    cd anilist-linker
     ```
-
-    *(Replace `your-username/your-repo-name` with your actual repository details if you create one.)*
 
 2.  **Install Python (if running directly):**
     Ensure you have Python 3.8 or newer installed. You can download it from [python.org](https://www.python.org/downloads/). *(If you plan to use Docker, Python will be installed within the container.)*
@@ -82,52 +80,32 @@ Create a file named `.env` in the root directory of the cloned repository (the s
 # Your Plex Media Server URL (e.g., 'http://localhost:32400' or '[http://192.168.1.100:32400](http://192.168.1.100:32400)')
 PLEX_URL='YOUR_PLEX_URL'
 # Your Plex X-Plex-Token. You can find this by inspecting network requests when using Plex Web.
-PLEX_TOKEN='YOUR_PLEX_TOKEN'
+PLEX_TOKEN="YOUR_PLEX_TOKEN"
 
 # --- Script Behavior Settings ---
 # Set to 'True' to make actual changes to Plex summaries.
 # Set to 'False' for a dry run (recommended for testing).
-PLEX_MAKE_CHANGES='False'
+PLEX_MAKE_CHANGES="False"
 
 # Set to 'True' to enable detailed [DEBUG] messages in the console and log file.
 # Set to 'False' for more concise [INFO] level messages in the console.
-PLEX_DEBUG='False'
+PLEX_DEBUG="False"
 
 # Path to the directory where log files will be saved INSIDE the container (e.g., '/app/logs').
 # If left empty, logging will only go to the container's stdout/stderr.
 # If you want logs persisted outside the container, you'll need to mount a volume.
-PLEX_LOG_PATH='/app/logs'
+# If running Locally, then change this to ``./logs`` to keep the folder in your install folder
+PLEX_LOG_PATH="/app/logs"
 
 # --- Library Targeting ---
 # Comma-separated list of EXACT TV show library names in Plex (e.g., "Anime,My Cartoons").
 # If left empty, TV show libraries will be SKIPPED entirely.
-PLEX_TARGET_TV_SHOW_LIBRARIES=''
+PLEX_TARGET_TV_SHOW_LIBRARIES=""
 
 # Comma-separated list of EXACT Movie library names in Plex (e.g., "Anime Movies,Studio Ghibli").
 # If left empty, Movie libraries will be SKIPPED entirely.
-PLEX_TARGET_MOVIE_LIBRARIES=''
+PLEX_TARGET_MOVIE_LIBRARIES=""
 
-# --- Anilist Data Source ---
-# URL for the anime_ids.json file. Usually, this default is fine.
-ANIME_IDS_JSON_URL='[https://raw.githubusercontent.com/Kometa-Team/Anime-IDs/refs/heads/master/anime_ids.json](https://raw.githubusercontent.com/Kometa-Team/Anime-IDs/refs/heads/master/anime_ids.json)'
-
-# --- Anilist API Settings ---
-# Anilist GraphQL API endpoint. Usually, this default is fine.
-ANILIST_API_URL='[https://graphql.anilist.co](https://graphql.anilist.co)'
-# The format string for the Anilist link prepended to summaries.
-# '{anilist_url}' will be replaced with the actual Anilist URL.
-ANILIST_PREFIX_FORMAT='[Anilist: {anilist_url}]\n'
-# Regular expression used to detect if an Anilist link already exists at the start of the summary.
-# This should match the format above. The \/? makes the trailing slash optional.
-EXISTING_ANILIST_PREFIX_CHECK_PATTERN='^\[Anilist: https:\/\/anilist\.co\/anime\/\\d+\/?\]\s*'
-
-# --- Anilist Rate Limit Settings ---
-# Maximum number of retries for Anilist API calls if a rate limit or transient error occurs.
-MAX_ANILIST_RETRIES='5'
-# Default number of seconds to wait if Anilist hits a rate limit and doesn't provide a 'Retry-After' header.
-# Also used for proactive pausing when 'x-ratelimit-remaining' is low.
-DEFAULT_RETRY_AFTER_SECONDS='60'
-# The script also enforces 1 API call every 2.0 seconds directly (ANILIST_MIN_INTERVAL_SECONDS = 2.0 in script).
 
 # --- Scheduling ---
 # Cron schedule for running the script.
@@ -140,12 +118,37 @@ DEFAULT_RETRY_AFTER_SECONDS='60'
 CRON_SCHEDULE="0 3 * * *"
 # Set to 'True' to force the script to run once immediately when the container starts,
 # in addition to any scheduled cron runs. Set to 'False' to only run on schedule.
-FORCE_RUN_ON_START='False'
+FORCE_RUN_ON_START="False"
+
+# --- Anilist Data Source ---
+# URL for the anime_ids.json file. Usually, this default is fine.
+ANIME_IDS_JSON_URL="[https://raw.githubusercontent.com/Kometa-Team/Anime-IDs/refs/heads/master/anime_ids.json](https://raw.githubusercontent.com/Kometa-Team/Anime-IDs/refs/heads/master/anime_ids.json)"
+
+# --- Anilist API Settings ---
+# Anilist GraphQL API endpoint. Usually, this default is fine.
+ANILIST_API_URL="[https://graphql.anilist.co](https://graphql.anilist.co)"
+# The format string for the Anilist link prepended to summaries.
+# '{anilist_url}' will be replaced with the actual Anilist URL.
+ANILIST_PREFIX_FORMAT="[Anilist: {anilist_url}]\n"
+# Regular expression used to detect if an Anilist link already exists at the start of the summary.
+# This should match the format above. The \/? makes the trailing slash optional.
+EXISTING_ANILIST_PREFIX_CHECK_PATTERN"^\[Anilist: https:\/\/anilist\.co\/anime\/\\d+\/?\]\s*"
+
+# --- Anilist Rate Limit Settings ---
+# Maximum number of retries for Anilist API calls if a rate limit or transient error occurs.
+MAX_ANILIST_RETRIES="5"
+# Default number of seconds to wait if Anilist hits a rate limit and doesn't provide a 'Retry-After' header.
+# Also used for proactive pausing when 'x-ratelimit-remaining' is low.
+DEFAULT_RETRY_AFTER_SECONDS="60"
+# The script also enforces 1 API call every 2.0 seconds directly (ANILIST_MIN_INTERVAL_SECONDS = 2.0 in script).
+# Changing this could cause you to get api errors as anilist enforces a strict api via headers. This has been testing
+# to prevent those errors as much as possible
+ANILIST_MIN_INTERVAL_SECONDS="2.0"
 ````
 
-### 2\. Run the Script (Directly or via Docker)
+### 2. Run the Script
 
-#### Option A: Run Directly (for testing/development)
+#### Option A: Run Directly
 
 Once your `.env` file is configured and dependencies are installed, you can run the script from your terminal:
 
@@ -154,7 +157,7 @@ Once your `.env` file is configured and dependencies are installed, you can run 
 Always start with a dry run to see what changes the script *would* make without actually modifying your Plex library.
 
 ```bash
-python plex_anilist_linker.py
+python anilist_linker.py
 ```
 
 *(Ensure `PLEX_MAKE_CHANGES='False'` in your `.env` file for a dry run.)*
@@ -164,7 +167,19 @@ python plex_anilist_linker.py
 If you're confident in the dry run output, you can set `PLEX_MAKE_CHANGES='True'` in your `.env` file and run the script. It will ask for confirmation by default.
 
 ```bash
-python plex_anilist_linker.py
+python anilist_linker.py
+```
+
+##### Scheduling Local Instal
+
+If you decide to run the script locally, you will need to either run it manually or setup something in cron to run the script when you want.
+
+```bash
+crontab -e
+```
+
+```bash
+0 3 * * * <location of install>/anilist-linker/venv/bin/python anilist_linker.py -y
 ```
 
 ##### Headless / Bypass Confirmation
@@ -172,34 +187,24 @@ python plex_anilist_linker.py
 For automated environments (e.g., cron jobs on a host machine), you can bypass the confirmation prompt by adding the `-y` or `--yes` flag:
 
 ```bash
-python plex_anilist_linker.py -y
+python anilist_linker.py -y
 # or
-python plex_anilist_linker.py --yes
+python anilist_linker.py --yes
 ```
 
 *(This will only apply changes if `PLEX_MAKE_CHANGES='True'` in your `.env` file.)*
 
-#### Option B: Run with Docker (for production/scheduling)
-
-1.  **Build the Docker Image:**
-    Navigate to the root directory of your project (where `docker-compose.yml` is located) in your terminal and build the image:
-
-    ```bash
-    docker build -t plex-anilist-linker -f docker/Dockerfile .
-    ```
-
-2.  **Run the Docker Container with Docker Compose:**
+#### Option B: Run with Docker
+1.  **Run the Docker Container with Docker Compose:**
     This is the recommended way to run the container for scheduling and persistent logging. Ensure your `.env` file is in the project root.
 
     ```bash
-    docker compose up -d --build
+    docker compose up -d
     ```
 
       * `docker compose up`: Starts the services defined in `docker-compose.yml`.
 
       * `-d`: Runs the containers in detached mode (in the background).
-
-      * `--build`: Forces Docker Compose to rebuild the image before starting the container. Use this whenever you make changes to your `Dockerfile` or source code.
 
       * Logs will be saved to the `./logs` directory in your project root by default (as configured in `docker-compose.yml` and `.env`).
 
@@ -207,7 +212,7 @@ python plex_anilist_linker.py --yes
     To see the output of your scheduled script runs (including errors and unmatched items), check the Docker logs:
 
     ```bash
-    docker compose logs -f plex-anilist-linker
+    docker compose logs -f anilist-linker
     ```
 
       * `-f`: Follows the log output in real-time.
