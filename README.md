@@ -132,7 +132,7 @@ ANILIST_API_URL="[https://graphql.anilist.co](https://graphql.anilist.co)"
 ANILIST_PREFIX_FORMAT="[Anilist: {anilist_url}]\n"
 # Regular expression used to detect if an Anilist link already exists at the start of the summary.
 # This should match the format above. The \/? makes the trailing slash optional.
-EXISTING_ANILIST_PREFIX_CHECK_PATTERN"^\[Anilist: https:\/\/anilist\.co\/anime\/\\d+\/?\]\s*"
+EXISTING_ANILIST_PREFIX_CHECK_PATTERN="^\[Anilist: https:\/\/anilist\.co\/anime\/\\d+\/?\]\s*"
 
 # --- Anilist Rate Limit Settings ---
 # Maximum number of retries for Anilist API calls if a rate limit or transient error occurs.
