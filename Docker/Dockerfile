@@ -15,11 +15,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl \
     && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
     && chmod +x "$SUPERCRONIC"
 
+# Upgrade vulnerable packages from base image before installing requirements
+RUN pip install --no-cache-dir --upgrade pip wheel "jaraco.context>=6.0.0"
+
 # Copy the requirements file and install Python dependencies
 # Using --no-cache-dir to prevent pip from storing downloaded packages, reducing image size
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt \
-    && pip install --no-cache-dir --upgrade pip wheel "jaraco.context>=6.0.0"
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy your Python script and the .env.example (for reference)
 # The actual .env file will be mounted or passed as environment variables at runtime
