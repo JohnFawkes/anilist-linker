@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl \
     && chmod +x "$SUPERCRONIC"
 
 # Upgrade vulnerable packages from base image before installing requirements
-RUN pip install --no-cache-dir --upgrade pip wheel "jaraco.context>=6.0.0"
+RUN pip install --no-cache-dir --upgrade pip "wheel>=0.46.2" "jaraco.context>=6.0.0"
 
 # Copy the requirements file and install Python dependencies
 # Using --no-cache-dir to prevent pip from storing downloaded packages, reducing image size
