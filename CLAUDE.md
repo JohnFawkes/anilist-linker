@@ -84,7 +84,7 @@ docker compose up -d
 
 ## CI/CD
 
-GitHub Actions workflow (`.github/workflows/docker-ci.yml`):
+GitHub Actions workflow (`.github/workflows/docker-publish.yml`):
 
 1. **Triggers:** Push to `main` or PR against `main` (only when `.github/`, `Docker/Dockerfile`, `anilist_linker.py`, or `requirements.txt` change)
 2. **Build:** Docker image built with BuildX and GHA cache
