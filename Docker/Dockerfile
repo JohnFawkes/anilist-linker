@@ -4,12 +4,16 @@ FROM python:3.11-slim-bookworm
 # Set the working directory inside the container
 WORKDIR /app
 
-# Install cron and other necessary tools
-# apt-get update: Updates the list of available packages
-# apt-get install -y cron: Installs the cron daemon
-# rm -rf /var/lib/apt/lists/*: Cleans up apt cache to keep image small
-RUN apt-get update && apt-get install -y cron \
-    && rm -rf /var/lib/apt/lists/*
+# Install supercronic (a container-native cron that runs without root)
+ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.33/supercronic-linux-amd64 \
+    SUPERCRONIC=/usr/local/bin/supercronic \
+    SUPERCRONIC_SHA1SUM=71b0d58cc53f6bd72cf2f293e09f329d7affbb67
+
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && curl -fsSL "$SUPERCRONIC_URL" -o "$SUPERCRONIC" \
+    && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -v - \
+    && chmod +x "$SUPERCRONIC"
 
 # Copy the requirements file and install Python dependencies
 # Using --no-cache-dir to prevent pip from storing downloaded packages, reducing image size
@@ -28,10 +32,12 @@ RUN chmod +x anilist_linker.py
 COPY Docker/start.sh .
 RUN chmod +x start.sh
 
-# Create a log file for cron and ensure it's writable (optional, but good practice)
-# Cron logs can also be redirected to stdout/stderr via start.sh
-RUN touch /var/log/cron.log
-RUN chmod 0644 /var/log/cron.log
+# Create a non-root user and hand over ownership of the app directory
+RUN useradd -r -u 1001 -s /bin/false appuser \
+    && chown -R appuser:appuser /app
+
+# Switch to non-root user
+USER appuser
 
 # Set the entrypoint for the container to run the start.sh script
 CMD ["./start.sh"]

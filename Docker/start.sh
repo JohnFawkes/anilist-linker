@@ -28,17 +28,12 @@ fi
 # Output (stdout and stderr) of the cron job is redirected to /proc/1/fd/1 and /proc/1/fd/2
 # This makes the cron job's output visible via `docker logs <container_name>`.
 # The -y flag is added to bypass the confirmation prompt for live runs.
-echo "${CRON_SCHEDULE} /usr/local/bin/python /app/anilist_linker.py -y >> /proc/1/fd/1 2>> /proc/1/fd/2" > /etc/cron.d/plex-anilist-cron
-
-# Give the crontab file appropriate permissions
-chmod 0644 /etc/cron.d/plex-anilist-cron
-
-# Apply the crontab (optional, as cron -f will pick it up, but good for explicit setup)
-crontab /etc/cron.d/plex-anilist-cron
+echo "${CRON_SCHEDULE} /usr/local/bin/python /app/anilist_linker.py -y >> /proc/1/fd/1 2>> /proc/1/fd/2" > /app/crontab
 
 echo "Cron job scheduled: '${CRON_SCHEDULE} /usr/local/bin/python /app/anilist_linker.py -y'"
 
-# Start the cron service in the foreground.
+# Start supercronic in the foreground.
+# supercronic is a container-native cron that does not require root privileges.
 # This keeps the container running and allows Docker to capture its logs.
-echo "Starting cron service in foreground..."
-cron -f
+echo "Starting supercronic..."
+supercronic /app/crontab
