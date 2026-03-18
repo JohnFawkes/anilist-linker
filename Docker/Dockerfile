@@ -7,7 +7,7 @@ WORKDIR /app
 # Install supercronic (a container-native cron that runs without root)
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.33/supercronic-linux-amd64 \
     SUPERCRONIC=/usr/local/bin/supercronic \
-    SUPERCRONIC_SHA1SUM=71b0d58cc53f6bd72cf2f293e09f329d7affbb67
+    SUPERCRONIC_SHA1SUM=71b0d58cc53f6bd72cf2f293e09e294b79c666d8
 
 RUN apt-get update && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/* \
