@@ -9,7 +9,7 @@ ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.
     SUPERCRONIC=/usr/local/bin/supercronic \
     SUPERCRONIC_SHA1SUM=6eb0a8e1e6673675dc67668c1a9b6409f79c37bc
 
-RUN apt-get update && apt-get install -y --no-install-recommends curl \
+RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/* \
     && curl -fsSL "$SUPERCRONIC_URL" -o "$SUPERCRONIC" \
     && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
