@@ -1,0 +1,5 @@
+# Go stdlib CVEs in supercronic's bundled runtime (compiled with Go 1.26.3).
+# Fixed in Go 1.26.4 — suppress until supercronic ships a Go 1.26.4 build.
+CVE-2026-42504
+CVE-2026-27145
+CVE-2026-42507
