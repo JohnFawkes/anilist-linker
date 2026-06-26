@@ -4,16 +4,18 @@ FROM python:3.14-slim-bookworm
 # Set the working directory inside the container
 WORKDIR /app
 
-# Install supercronic (a container-native cron that runs without root)
+# Latest releases available at https://github.com/aptible/supercronic/releases
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.46/supercronic-linux-amd64 \
-    SUPERCRONIC=/usr/local/bin/supercronic \
-    SUPERCRONIC_SHA1SUM=5bcefed628e32adc08e32634db2d10e9230dbca0
+    SUPERCRONIC_SHA1SUM=5bcefed628e32adc08e32634db2d10e9230dbca0 \
+    SUPERCRONIC=supercronic-linux-amd64
 
 RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/* \
-    && curl -fsSL "$SUPERCRONIC_URL" -o "$SUPERCRONIC" \
+    && curl -fsSLO "$SUPERCRONIC_URL" \
     && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
-    && chmod +x "$SUPERCRONIC"
+    && chmod +x "$SUPERCRONIC" \
+    && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
+    && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
 
 # Upgrade vulnerable packages from base image before installing requirements
 RUN pip install --no-cache-dir --upgrade pip "wheel>=0.46.2" "jaraco.context>=6.1.0"
