@@ -8,6 +8,7 @@ on:
       - 'Docker/Dockerfile'
       - 'anilist_linker.py'
       - 'requirements.txt'
+      - '.trivyignore'
 
   pull_request:
     branches: [ "main" ]
@@ -16,6 +17,7 @@ on:
       - 'Docker/Dockerfile'
       - 'anilist_linker.py'
       - 'requirements.txt'
+      - '.trivyignore'
 
 env:
   REGISTRY: ghcr.io
