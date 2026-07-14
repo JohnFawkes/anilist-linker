@@ -3,3 +3,7 @@
 CVE-2026-42504
 CVE-2026-27145
 CVE-2026-42507
+
+# Go stdlib CVEs fixed in Go 1.26.5 — suppress until supercronic ships a Go 1.26.5 build.
+CVE-2026-39822
+CVE-2026-42505
