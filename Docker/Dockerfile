@@ -17,13 +17,14 @@ RUN apt-get update && apt-get upgrade -y --no-install-recommends && apt-get inst
     && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
     && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
 
-# Upgrade vulnerable packages from base image before installing requirements
-RUN pip install --no-cache-dir --upgrade pip "wheel>=0.46.2" "jaraco.context>=6.1.0"
-
 # Copy the requirements file and install Python dependencies
-# Using --no-cache-dir to prevent pip from storing downloaded packages, reducing image size
+# Using --no-cache-dir to prevent pip from storing downloaded packages, reducing image size.
+# pip is uninstalled afterwards: it isn't needed at runtime, and its vendored
+# dependency list (pip/_vendor/vendor.txt, e.g. setuptools, urllib3, msgpack)
+# is flagged by Trivy as installed Python packages.
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt \
+    && pip uninstall -y pip
 
 # Copy your Python script and the .env.example (for reference)
 # The actual .env file will be mounted or passed as environment variables at runtime
